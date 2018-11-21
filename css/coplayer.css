@@ -1,0 +1,180 @@
+#we-coplayer {
+  position: fixed;
+  left: 2em;
+  bottom: 1em;
+  /* width: 3em; */
+  height: 3em;
+  z-index: 2147483647; /* max integer */
+  overflow: hidden;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 3px #000;
+  background-color: rgba(0, 0, 0, 0.75);
+  background-clip: padding-box;
+  transition: width ease-in-out 0.3s;
+  font-size: 12px;
+  box-sizing: content-box;
+}
+
+
+#we-coplayer.active #we-coplayer-toggle {
+  color: #c33;
+  text-shadow: 0 1px 0 #333;
+}
+
+#we-coplayer * {
+  box-sizing: border-box;
+}
+
+#we-coplayer input,
+#we-coplayer button {
+  float: left;
+  height: 3em;
+  margin: 0;
+  border: none;
+  background-color: transparent;
+  color: #eee;
+  font-size: inherit;
+  font-family: inherit;
+  line-height: 3em;
+  outline: none;
+}
+
+#we-coplayer button::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+#we-coplayer input {
+  min-width: 23em;
+  padding: 0 1em;
+  /* font-family: Consolas, monospace; */
+  text-align: left;
+}
+
+#we-coplayer #we-coplayer-remote {
+  min-width: 31.5em;
+  padding: 0 1em;
+  /* font-family: Consolas, monospace; */
+  text-align: left;
+}
+
+#we-coplayer input + input,
+#we-coplayer input + button,
+#we-coplayer button + input,
+#we-coplayer button + button {
+  border-left: none;
+}
+
+#we-coplayer input::-moz-placeholder {
+  font-family: inherit;
+  color: #999;
+}
+#we-coplayer input::-webkit-input-placeholder {
+  font-family: inherit;
+  color: #999;
+}
+#we-coplayer input:focus::-moz-placeholder {
+  color: #ccc;
+}
+#we-coplayer input:focus::-webkit-input-placeholder {
+  color: #ccc;
+}
+
+#we-coplayer input:focus {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+#we-coplayer button {
+  width: 3em;
+  padding: 0;
+  border-radius: 0;
+  text-align: center;
+}
+
+#we-coplayer button:hover:not(:disabled) {
+  color: #fff;
+  text-shadow: 0 1px 0 #111;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+#we-coplayer button:active {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+#we-coplayer button:not(:disabled) {
+  cursor: pointer;
+}
+
+#we-coplayer button:disabled {
+  opacity: 0.3;
+}
+
+#we-coplayer button svg {
+display: inline-block;
+height: 1em;
+fill: currentColor;
+vertical-align: middle;
+}
+
+#we-coplayer-fullscreen svg:last-child,
+#we-coplayer-fullscreen.active svg:first-child {
+  display: none;
+}
+
+#we-coplayer-fullscreen.active svg:last-child {
+  display: inline-block;
+}
+
+.coplay-fullscreen-container:fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+.coplay-fullscreen-container:-webkit-full-screen {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+.coplay-fullscreen-container:-moz-full-screen {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+@keyframes shift {
+0% {
+  background-position: 0 0;
+}
+100% {
+  background-position: 64px 0;
+}
+}
+#we-coplayer-local-video,
+#we-coplayer-remote-video {
+  position: fixed;
+  top: 10px;
+  z-index: 2147483647;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 3px #000;
+  background-size: 64px 64px;
+  background-clip: padding-box;
+  animation: shift 2s linear infinite;
+}
+#we-coplayer-local-video {
+  right: 340px;
+  width: 160px;
+  height: 120px;
+  transform: rotateY(180deg);
+}
+#we-coplayer-remote-video {
+  right: 10px;
+  width: 320px;
+  height: 240px;
+  background-image: repeating-linear-gradient(
+      -45deg,
+      rgba(0, 0, 0, 0.1),
+      rgba(0, 0, 0, 0.1) 25%,
+      rgba(255, 255, 255, 0.4) 25%,
+      rgba(255, 255, 255, 0.4) 50%
+  );
+}
