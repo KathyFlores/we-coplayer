@@ -1,6 +1,6 @@
 {
   "name": "we-coplayer",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "Coplayer for v.qq.com",
   "permissions": [
     "declarativeContent",
@@ -8,8 +8,8 @@
     "webNavigation",
     "storage",
     "tabs",
-    "http://*.qq.com/*",
-    "https://*.qq.com/*"
+    "http://*.v.qq.com/*",
+    "https://*.v.qq.com/*"
   ],
   "background": {
     "scripts": ["js/main.js"],

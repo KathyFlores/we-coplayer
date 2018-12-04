@@ -9,7 +9,7 @@
   }
 
   // Supported websites: Youku, SohuTV, Tudou, TencentVideo, iQiyi, YouTube
-  let host = location.host.match(/(?:^|\.)(youku\.com|sohu\.com|tudou\.com|qq\.com|iqiyi\.com|youtube\.com|acfun\.tv|bilibili\.com|le\.com|vimeo\.com)(?:\/|$)/i);
+  let host = location.host.match(/(?:^|\.)(youku\.com|sohu\.com|tudou\.com|v\.qq\.com|iqiyi\.com|youtube\.com|acfun\.tv|bilibili\.com|le\.com|vimeo\.com)(?:\/|$)/i);
   if (!host) {
     return;
   }
@@ -94,16 +94,23 @@
     return pathname + '?randKey=' + Math.random();
   }
 
-  function isTimeEqual(now, inputTime) {
+  function getTimeSeconds(timeStr) {
+    const arr = timeStr.split(':').reverse();
+    return (+arr[0] || 0) + (+arr[1] || 0) * 60 + (+arr[2] || 0) * 3600;
+  }
+
+  function isPlayTime(now, inputTime) {
     const arr = inputTime.split(':');
     if(arr.length !== 3) {
       alert("开始播放的时间格式错误！请参考'1:20:01', '00:19:21', '00:00:38'输入！");
     }
-    return (+arr[0] === now.getHours()) && (+arr[1] === now.getMinutes()) && (+arr[0] === now.getSeconds());
+    const nowTimeString = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+    return getTimeSeconds(nowTimeString) >= getTimeSeconds(inputTime);
   }
+
   var player = top.PLAYER;
   var interval = null;
-  function ajax(seekTime, playTime) {
+  function ajax(playTime) {
     var xhr = null;
     if (window.XMLHttpRequest) {
       xhr = new window.XMLHttpRequest();
@@ -111,33 +118,70 @@
       xhr = new ActiveObject("Microsoft")
     }
     // 通过get的方式请求当前文件
-    xhr.open("get", getReqUrl());
+    xhr.open("get", getReqUrl(), false);
     xhr.send(null);
     // 监听请求状态变化
-    xhr.onreadystatechange = function() {
+    // xhr.onreadystatechange = function() {
       var time = null, now = null;
       if (xhr.readyState === 2) {
         // 获取响应头里的时间戳
         time = xhr.getResponseHeader("Date");
         now = new Date(time);
-        if(isTimeEqual(now, playTime)) {
-          player.seekTo(seekTime);
+        if(isPlayTime(now, playTime)) {
+          console.log("play");
+          player.play();
           clearInterval(interval);
         }
       }
-    }
+    // }
   }
 
   function handlePlay(seekTime, playTime) {
+    player.seekTo(seekTime);
     player.pause();
     interval = setInterval(function() {
-      ajax(seekTime, playTime);
-    }, 100);
+      // ajax(playTime);
+      let d = new Date();
+      console.log(d);
+      if(!compareTime(d, playTime)) {
+        console.log("play");
+        player.play();
+        clearInterval(interval);
+      }
+    }, 300);
   }
 
-  function getSeconds(timeStr) {
-    const arr = timeStr.split(':').reverse();
-    return (+arr[0] || 0) + (+arr[1] || 0) * 60 + (+arr[2] || 0) * 3600;
+  function compareTime(now, inputTime) {
+    // return true if inputTime has not come
+    const arr = inputTime.split(':');
+    if(arr.length !== 3) {
+      alert("开始播放的时间格式错误！请参考'1:20:01', '00:19:21', '00:00:38'输入！");
+      return false;
+    }
+    const nowTimeString = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+    return getTimeSeconds(inputTime) >= getTimeSeconds(nowTimeString);
+  }
+  
+  function isPlayTimeValid(playTime) {
+    // var xhr = null;
+    // if (window.XMLHttpRequest) {
+    //   xhr = new window.XMLHttpRequest();
+    // } else { // ie
+    //   xhr = new ActiveObject("Microsoft")
+    // }
+    // xhr.open("get", getReqUrl());
+    // xhr.send(null);
+    // xhr.onreadystatechange = function() {
+    //   var time = null, now = null;
+    //   if (xhr.readyState === 2) {
+    //     // 获取响应头里的时间戳
+    //     time = xhr.getResponseHeader("Date");
+    //     now = new Date(time);
+    //     console.log(compareTime(now, playTime));
+    //     return compareTime(now, playTime);
+    //   }
+    // }
+    return compareTime(new Date(), playTime);
   }
 
   function initUi() {
@@ -168,12 +212,20 @@
     });
     on(syncBtn, 'click', () => {
       // getTime();
-      if(interval) {
+      if (interval) {
         clearInterval(interval);
       }
-      const seekTime = getSeconds(local.value);
+      const seekTime = getTimeSeconds(local.value);
+      if (seekTime > player.getDuration()) {
+        alert('视频播放时间超出视频时长，请重新输入！');
+        return;
+      }
       const playTime = remote.value;
-      if(seekTime && playTime) {
+      if (!isPlayTimeValid(playTime)) {
+        alert('当前时间已超过期望开始播放时间，请重新输入！');
+        return;
+      }
+      if (seekTime && playTime) {
         handlePlay(seekTime, playTime);
       } else {
         alert('请输入视频播放时间与开始播放时间！');
